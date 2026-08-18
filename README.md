@@ -17,16 +17,18 @@ The `/predict` endpoint will accept four numerical measurements of an iris flowe
 The client sends four iris flower measurements to the `/predict` endpoint. The API validates the input and, if it is valid, passes the data to the trained machine learning model. The model predicts the iris species, and the API returns the prediction to the client.
 
 ### Flow
+
+```text
 Client
-↓
+  ↓
 Request (`/predict`)
-↓
+  ↓
 Input Validation
-↓
+  ↓
 ML Model
-↓
+  ↓
 Prediction
-↓
+  ↓
 Response
-↓
+  ↓
 Client
