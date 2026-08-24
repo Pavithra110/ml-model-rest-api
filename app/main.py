@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import joblib
 from contextlib import asynccontextmanager
+from app.models.schemas import PredictionInput
 
 model = None
 
@@ -18,19 +19,12 @@ def root():
     return {"message": "ML API is alive"}
 
 @app.post("/predict")
-def predict():
-    data = {
-        "sepal_length": 6.7,
-        "sepal_width": 3.1,
-        "petal_length": 4.7,
-        "petal_width": 1.5
-    }
-
+def predict(data: PredictionInput):
     features = [[
-        data["sepal_length"],
-        data["sepal_width"],
-        data["petal_length"],
-        data["petal_width"]
+        data.sepal_length,
+        data.sepal_width,
+        data.petal_length,
+        data.petal_width
     ]]
 
     prediction = model.predict(features)
