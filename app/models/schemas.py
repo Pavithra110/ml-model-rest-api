@@ -5,3 +5,9 @@ class PredictionInput(BaseModel):
     sepal_width: float = Field(..., gt=0)
     petal_length: float = Field(..., gt=0)
     petal_width: float = Field(..., gt=0)
+
+
+class PredictionOutput(BaseModel):
+    prediction: str
+    confidence: float
+    request_id: str

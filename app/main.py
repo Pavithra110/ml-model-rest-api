@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 import joblib
 import uuid
 from contextlib import asynccontextmanager
-from app.models.schemas import PredictionInput
+from app.models.schemas import PredictionInput, PredictionOutput
 
 model = None
 
@@ -13,7 +14,17 @@ async def lifespan(app):
     print("ML model loaded successfully")
     yield
 
+class PredictionError(Exception):
+    pass
+
 app = FastAPI(lifespan=lifespan)
+
+@app.exception_handler(PredictionError)
+async def prediction_error_handler(request, exc):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Prediction error"}
+    )
 
 @app.get("/")
 def root():
@@ -26,7 +37,7 @@ def health():
         "model_loaded": model is not None
     }
 
-@app.post("/predict")
+@app.post("/predict", response_model=PredictionOutput)
 def predict(data: PredictionInput):
     request_id = str(uuid.uuid4())
 
@@ -37,11 +48,16 @@ def predict(data: PredictionInput):
         data.petal_width
     ]]
 
-    prediction = model.predict(features)
+    try:
+        prediction = model.predict(features)
+        probabilities = model.predict_proba(features)
+        confidence = max(probabilities[0])
 
-    probabilities = model.predict_proba(features)
-
-    confidence = max(probabilities[0])
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Prediction failed"
+        )
 
     return {
         "prediction": prediction[0],
