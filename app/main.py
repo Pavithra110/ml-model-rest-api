@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 import joblib
 import uuid
 from contextlib import asynccontextmanager
 from app.models.schemas import PredictionInput, PredictionOutput
+from app.logging_config import logger
+import time
 
 model = None
 
@@ -11,13 +13,30 @@ model = None
 async def lifespan(app):
     global model
     model = joblib.load("ml/saved_model/model.joblib")
-    print("ML model loaded successfully")
+    logger.info("ML model loaded successfully")
     yield
 
 class PredictionError(Exception):
     pass
 
 app = FastAPI(lifespan=lifespan)
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    request_id = str(uuid.uuid4())
+    request.state.request_id = request_id
+    start_time = time.time()
+
+    response = await call_next(request)
+
+    duration = time.time() - start_time
+
+    logger.info(
+    f"request_id={request_id} method={request.method} "
+    f"path={request.url.path} duration={duration:.4f}s"
+    )
+
+    return response
 
 @app.exception_handler(PredictionError)
 async def prediction_error_handler(request, exc):
@@ -38,8 +57,8 @@ def health():
     }
 
 @app.post("/predict", response_model=PredictionOutput)
-def predict(data: PredictionInput):
-    request_id = str(uuid.uuid4())
+def predict(request: Request, data: PredictionInput):
+    request_id = request.state.request_id
 
     features = [[
         data.sepal_length,
@@ -53,7 +72,14 @@ def predict(data: PredictionInput):
         probabilities = model.predict_proba(features)
         confidence = max(probabilities[0])
 
-    except Exception:
+        logger.info(
+            f"request_id={request_id} prediction={prediction[0]}"
+        )
+
+    except Exception as exc:
+        logger.error(
+            f"request_id={request_id} prediction failed error={exc}"
+        )
         raise HTTPException(
             status_code=500,
             detail="Prediction failed"
