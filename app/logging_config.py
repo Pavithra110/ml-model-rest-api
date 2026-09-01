@@ -1,11 +1,15 @@
 import logging
 from logging.handlers import RotatingFileHandler
+from app.config import settings
 
 logger = logging.getLogger("ml_api")
-logger.setLevel(logging.INFO)
+
+log_level = getattr(logging, settings.LOG_LEVEL.upper())
+
+logger.setLevel(log_level)
 
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(log_level)
 
 file_handler = RotatingFileHandler(
     "logs/app.log",
@@ -13,7 +17,7 @@ file_handler = RotatingFileHandler(
     backupCount=3
 )
 
-file_handler.setLevel(logging.INFO)
+file_handler.setLevel(log_level)
 
 formatter = logging.Formatter(
     "%(asctime)s | %(levelname)s | %(name)s | %(message)s"

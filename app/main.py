@@ -4,17 +4,21 @@ import uuid
 from contextlib import asynccontextmanager
 from app.logging_config import logger
 from app.routers.v1 import router as v1_router
+from app.config import settings
 import time
 
 
 @asynccontextmanager
 async def lifespan(app):
-    app.state.model = joblib.load("ml/saved_model/model.joblib")
+    app.state.model = joblib.load(settings.MODEL_PATH)
     logger.info("ML model loaded successfully")
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title=settings.API_TITLE,
+    lifespan=lifespan
+)
 app.include_router(v1_router)
 
 

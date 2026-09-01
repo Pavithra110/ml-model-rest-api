@@ -9,6 +9,7 @@ from app.models.schemas import (
     PredictionBatchInput,
     PredictionBatchOutput
 )
+from app.config import settings
 
 router = APIRouter(prefix="/api/v1")
 
@@ -62,6 +63,12 @@ def predict(request: Request, data: PredictionInput):
 @router.post("/predict-batch", response_model=PredictionBatchOutput)
 def predict_batch(request: Request, data: PredictionBatchInput):
     request_id = request.state.request_id
+
+    if len(data.inputs) > settings.MAX_BATCH_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Batch size cannot exceed {settings.MAX_BATCH_SIZE}"
+        )
 
     features = pd.DataFrame([
         {
