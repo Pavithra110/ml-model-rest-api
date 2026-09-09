@@ -1,10 +1,15 @@
 import pandas as pd
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 
 from app.models.schemas import PredictionInput, PredictionV2Output
 
+from app.security import get_api_key
 
-router = APIRouter(prefix="/api/v2")
+
+router = APIRouter(
+    prefix="/api/v2",
+    dependencies=[Depends(get_api_key)]
+)
 
 
 @router.post("/predict", response_model=PredictionV2Output)

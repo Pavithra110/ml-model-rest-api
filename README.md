@@ -47,3 +47,10 @@ Start the application using Docker Compose:
 
 ```bash
 docker compose up --build
+
+
+### Rate Limiting
+
+Rate limiting is not implemented in this MVP. In a production deployment, a rate limiter or API gateway should restrict the number of requests a client can make within a time window. This helps prevent abuse and excessive resource consumption.
+
+A production implementation could use a reverse proxy, API gateway, or a shared Redis-backed rate limiter so that request limits work consistently across multiple API instances.

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import uuid
 from contextlib import asynccontextmanager
@@ -19,6 +20,20 @@ async def lifespan(app):
 app = FastAPI(
     title=settings.API_TITLE,
     lifespan=lifespan
+)
+
+allowed_origins = [
+    origin.strip()
+    for origin in settings.CORS_ORIGINS.split(",")
+    if origin.strip()
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
 app.include_router(v1_router)
 app.include_router(v2_router)

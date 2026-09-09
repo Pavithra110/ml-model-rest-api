@@ -1,7 +1,8 @@
-def test_predict(client):
-  
+def test_predict(client, api_headers):
+
     response = client.post(
         "/api/v1/predict",
+        headers=api_headers,
         json={
             "sepal_length": 5.1,
             "sepal_width": 3.5,

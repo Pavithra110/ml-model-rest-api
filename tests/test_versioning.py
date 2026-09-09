@@ -1,4 +1,4 @@
-def test_v1_and_v2_response_shapes(client):
+def test_v1_and_v2_response_shapes(client, api_headers):
 
     input_data = {
         "sepal_length": 5.1,
@@ -9,11 +9,13 @@ def test_v1_and_v2_response_shapes(client):
 
     v1_response = client.post(
         "/api/v1/predict",
+        headers=api_headers,
         json=input_data
     )
 
     v2_response = client.post(
         "/api/v2/predict",
+        headers=api_headers,
         json=input_data
     )
 

@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from app.models.schemas import PredictionInput, PredictionOutput
 from app.logging_config import logger
 from app.models.schemas import (
@@ -10,8 +10,12 @@ from app.models.schemas import (
     PredictionBatchOutput
 )
 from app.config import settings
+from app.security import get_api_key
 
-router = APIRouter(prefix="/api/v1")
+router = APIRouter(
+    prefix="/api/v1",
+    dependencies=[Depends(get_api_key)]
+)
 
 @router.get("/health")
 def health(request: Request):
