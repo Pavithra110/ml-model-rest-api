@@ -38,6 +38,7 @@ Prediction
 Response
   ↓
 Client
+```
 
 ## How to run this project
 
@@ -47,7 +48,7 @@ Start the application using Docker Compose:
 
 ```bash
 docker compose up --build
-
+```
 
 ### Rate Limiting
 
