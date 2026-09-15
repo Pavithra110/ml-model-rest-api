@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from fastapi import APIRouter, Request, HTTPException, Depends
-from app.models.schemas import PredictionInput, PredictionOutput
+from app.metrics import prediction_counter
 from app.logging_config import logger
 from app.models.schemas import (
     PredictionInput,
@@ -41,6 +41,8 @@ def predict(request: Request, data: PredictionInput):
         prediction = model.predict(features)
         probabilities = model.predict_proba(features)
         confidence = max(probabilities[0])
+
+        prediction_counter.labels(prediction[0]).inc()
 
         logger.info(
             f"request_id={request_id} prediction={prediction[0]}"

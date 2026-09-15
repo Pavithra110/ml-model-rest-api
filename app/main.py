@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 import joblib
 import uuid
 from contextlib import asynccontextmanager
@@ -21,6 +22,8 @@ app = FastAPI(
     title=settings.API_TITLE,
     lifespan=lifespan
 )
+
+Instrumentator().instrument(app).expose(app)
 
 allowed_origins = [
     origin.strip()
