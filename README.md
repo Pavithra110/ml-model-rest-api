@@ -55,6 +55,7 @@ Model metadata is stored in:
 - Docker Compose
 - pytest
 - httpx
+- GitHub Actions
 
 ## Architecture
 
@@ -196,6 +197,26 @@ Docker Compose mounts the saved model directory into the container:
 ```
 
 The API runs with four Uvicorn workers inside the container.
+
+## Deployment
+
+The API is deployed online using Render with Docker.
+
+### Live API
+
+https://ml-model-rest-api.onrender.com
+
+### Swagger API Documentation
+
+https://ml-model-rest-api.onrender.com/docs
+
+The deployed API provides the same versioned endpoints as the local Docker Compose environment.
+
+The root endpoint can be accessed without authentication:
+
+```text
+https://ml-model-rest-api.onrender.com/
+
 
 ## API Endpoints
 
