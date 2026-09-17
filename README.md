@@ -217,6 +217,7 @@ The root endpoint can be accessed without authentication:
 ```text
 https://ml-model-rest-api.onrender.com/
 
+```
 
 ## API Endpoints
 
